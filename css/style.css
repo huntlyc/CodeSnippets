@@ -1,0 +1,69 @@
+body {
+    
+    padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+h1{margin-bottom: 15px;}
+
+#editor,
+.aceeditor {
+    position: absolute;
+    width: 579px; /* 690px */
+    height: 400px;
+}
+
+.snippet-file{
+    padding-bottom: 410px;
+}
+
+#add-new-file{
+    display: block;
+    width: 72px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#right-col{
+    min-height: 531px;
+    position: relative;
+}
+
+#title,
+#description,
+#link{
+    width: 250px;
+}
+
+#update-buttons{
+    position: absolute;
+    bottom: 10px;
+}
+
+#delete{
+    margin-left: 97px;
+}
+#meta-info,
+#links-container{
+    margin-bottom: 50px;            
+}
+
+ul#links{
+    margin: 5px 0px 20px 0px;            
+    list-style-type: none;
+}
+
+#download-button{
+    display: block;
+    float: right;
+}
+
+#validation-error{
+    display: none;
+}
+
+div.container{
+    overflow: hidden;
+}
+
+.hidden{
+    display: none;
+}
