@@ -217,6 +217,6 @@
         <script src="js/mode-text.js" type="text/javascript" charset="utf-8"></script>
         <script src="js/mode-xml.js" type="text/javascript" charset="utf-8"></script>        
         <script src="js/theme-solarized_dark.js" type="text/javascript" charset="utf-8"></script>
-        <script src="coffee/snippets.js" type="text/javascript" charset="utf-8"></script>        
+        <script src="js/snippets.js" type="text/javascript" charset="utf-8"></script>        
 	</body>
 </html>
