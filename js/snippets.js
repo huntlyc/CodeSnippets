@@ -1,5 +1,7 @@
 //Some Globals, cause we all love 'em so much
-var editorCount, editorHelper, codeSnippet, snippetUI;
+var editorHelper, 
+    codeSnippet, 
+    snippetUI;
 
 var CodeSnippet = {
     _title: "",
@@ -7,51 +9,19 @@ var CodeSnippet = {
     _links: [],
     _files: [],
     _views: 1,
-    _dateCreated: new Date(),
-    _lastModified: new Date(),
+    _dateCreated: "",
+    _lastModified: "",
 
     init: function () {
         return this;
-    },    
-
-    getSnippetFiles: function () {
-        //Build up files.
-        var files = "[";                
-        jQuery(".snippet-file").each(function () {
-            var editors = editorHelper.getEditors();
-            var curEditor = editors[parseInt(jQuery(this).children('.editornumber').val())];
-            var fileContents = snippetHelper.encodeString(curEditor.getSession().getValue());
-            files = files + '{"filename": "' + snippetHelper.encodeString(jQuery(this).children('.file-name').val()) + '", ';
-
-            files = files + '"filecontent": "' + fileContents + '"}, ';
-        });
-        //remove last comma and space characters
-        files = files.substring(0,files.length -2);
-        files = files + "]";
-
-        return files;
     },
 
-    saveSnippet: function () {
-        if(jQuery("#title").val().trim() != ""){
-            this._title = snippetHelper.encodeString(jQuery("#title").val());
-            this._description = snippetHelper.encodeString(jQuery("#description").val());
+    setTitle: function(title){
+        this._title = snippetHelper.encodeString(title);
+    },
 
-            //build links
-            this._links = this.getSnippetLinks();
-            this._files = this.getSnippetFiles();
-
-            this._views = jQuery("#views").val();
-            this._dateCreated = jQuery("#dateCreated").val();
-            this._lastModified = jQuery("#lastModified").val();
-
-            //var snippet = '{"title": "' + this.title + '", "description": "' + this.description + '", "files": ' + this.files + ', "links": ' + this.links + ', "date_created": "' + this.dateCreated + '", "last_modified": "' + this.lastModified + '", "views": ' + this.views + '}';
-            //jQuery("#snippet").val(snippet);
-            console.log(this);
-            //jQuery("#snippet-form").submit();
-        }else{
-            jQuery("#validation-error").show();
-        }
+    setDescription: function(description){
+        this._description = snippetHelper.encodeString(description);
     },
 
     addLink: function (newLink) { 
@@ -69,7 +39,63 @@ var CodeSnippet = {
         if(arrayPosition !== -1){ //remove link from array
             this._links.splice(arrayPosition, 1);
         }
-    }
+    },
+
+    setFiles: function (fileList) {
+        this._files = fileList;
+    },
+
+    setViews: function(views){
+        this._views = views;
+    },
+
+    setDateCreated: function(dateCreated){
+        this._dateCreated = dateCreated;
+    },
+
+    setLastModified: function(lastModified){
+        this._lastModified = lastModified;
+    },
+    
+    toJSONString: function () {        
+        var snippet, 
+            curFile, 
+            curLink;
+
+        //set title and metadata
+        snippet = "{";
+        snippet += '"title": "' + this._title + '", ';
+        snippet += '"description": "' + this._description + '", ';
+        snippet += '"date_created": "' + this._dateCreated + '", ';
+        snippet += '"last_modified": "' + this._lastModified + '", ';
+        snippet += '"views": ' + this._views + ', ';
+
+        //Build Files
+        snippet += '"files": [';        
+        if(this._files.length > 0){
+            for (var i = 0; i < this._files.length; i++) {;
+                curFile = this._files[i];
+                snippet += '{"filename": "' + curFile.filename + '", ';
+                snippet += '"filecontent": "' + curFile.filecontent + '"}, ';
+            };
+            snippet = snippet.substring(0, snippet.length -2);
+        }
+        snippet += '], ';
+
+        //Build links
+        snippet += '"links": [';
+        if(this._links.length > 0){
+            for (var i = 0; i < this._links.length; i++) {;
+                curLink = this._links[i];
+                snippet += '"' + curLink + '", ';            
+            };
+            snippet = snippet.substring(0, snippet.length -2);
+        }
+        
+        snippet += ']';
+        snippet += "}";
+        return snippet;
+    }    
 };
 
 var SnippetHelper = {
@@ -78,14 +104,16 @@ var SnippetHelper = {
     },
 
     encodeString: function (str){
+        var regxPatt, 
+            encodedString;
         //Convert line breaks to <br />                
-        var patt = /\n/g;                            
-        var encodedString = str.replace(patt, "<br/>");
+        regxPatt = /\n/g;                            
+        encodedString = str.replace(regxPatt, "<br/>");
         //Escape characters
         encodedString = escape(str);
         //the escape function misses out '+', convert them.
-        var patt2 = /\+/g;
-        encodedString = encodedString.replace(patt2, '%2B');
+        regxPatt = /\+/g;
+        encodedString = encodedString.replace(regxPatt, '%2B');
         return encodedString;
     }
 }
@@ -93,7 +121,7 @@ var SnippetHelper = {
 
 var EditorHelper = {    
 
-    editors: [],
+    _editors: [],
 
     init: function () {
         this.editors = [];
@@ -101,41 +129,48 @@ var EditorHelper = {
     },
 
     addNewFile: function(){
-        var newHTML = '<div class="snippet-file"><input type="hidden" class="editornumber" value="' + editorCount + '"/><input type="text" class="span3 file-name" placeholder="readme.txt"><div class="aceeditor" id="editor' + editorCount + '"></div></div>';
+        var newHTML, 
+            editorID, 
+            editor, 
+            TextMode;
+
+        newHTML = '<div class="snippet-file"><input type="hidden" class="editornumber" value="' + this._editors.length + '"/><input type="text" class="span3 file-name" placeholder="readme.txt"><div class="aceeditor" id="editor' + this._editors.length + '"></div></div>';
         jQuery("#snippet-list").append(newHTML);
 
-        var editorID = "editor" + this._editors.length;
+        editorID = "editor" + this._editors.length;
         console.log(editorID);
-        var editor = ace.edit(editorID);
+        editor = ace.edit(editorID);
         editor.setTheme("ace/theme/solarized_dark");
 
-        var TextMode = require("ace/mode/text").Mode;
-        editor.getSession().setMode(new TextMode());  
-        var editors = editorHelper.getEditors();
-        editors.push(editor);
-        editorHelper.updateEditorList(editors);
-        snippetUI.registerFileNameListeners();
-        editorCount++;
+        TextMode = require("ace/mode/text").Mode;
+        editor.getSession().setMode(new TextMode());          
+        this._editors.push(editor);
+        
+        snippetUI.registerFileNameListeners();        
         return false; 
     },
 
     getEditors: function () {
-        return this.editors;
+        return this._editors;
     },
 
     updateEditorList: function (newEditorList){
-        this.editors = newEditorList;
+        this._editors = newEditorList;
     },
 
     setupEditors: function () {
-        var editors, editorID, editor,filename, filetype, editorNumber; 
+        var editorID, 
+            editor, 
+            filename, 
+            filetype, 
+            editorNumber; 
         jQuery(".aceeditor").each(function () {
             editorID = jQuery(this).attr("id");            
             editor = ace.edit(editorID);
             editor.setTheme("ace/theme/solarized_dark");
-            editors = EditorHelper.getEditors();
-            editors.push(editor);
-            editorHelper.updateEditorList(editors);
+            var tmpEditors = editorHelper.getEditors();
+            tmpEditors.push(editor);
+            editorHelper.updateEditorList(tmpEditors);
 
             filename = jQuery(this).siblings(".file-name").val();
             
@@ -143,15 +178,14 @@ var EditorHelper = {
                 fileType = filename.substring(filename.lastIndexOf("."));
                 editorNumber = jQuery(this).siblings(".editornumber").val();
                 editorHelper.updateSyntaxHighlighting(fileType, editorNumber);
-            }
-            editorCount++;
+            }            
         });
     },
 
     updateSyntaxHighlighting: function (fileType, editorNumber){
-        console.log(fileType + " e: " + editorNumber);
+        var editor;
 
-        var editor = this.editors[parseInt(editorNumber)];
+        editor = this._editors[parseInt(editorNumber)];
 
         switch(fileType){            
             case ".css":
@@ -194,11 +228,9 @@ var EditorHelper = {
                 var XMLMode = require("ace/mode/xml").Mode;
                 editor.getSession().setMode(new XMLMode());
             break;
-
         }
     }
 };
-
 
 var SnippetUI = {
     init: function(){
@@ -206,18 +238,20 @@ var SnippetUI = {
     },
 
     addLink: function(newLink){
+        var regex, 
+            match, 
+            linkHTML;
 
-        console.log(newLink);
         if(newLink != ""){
-            var regex = /https?:\/\//;                            
-            var match = regex.exec(newLink);  
+            regex = /https?:\/\//;                            
+            match = regex.exec(newLink);  
             if(!match){                        
                 newLink = "http://" + newLink;
             }
 
             codeSnippet.addLink(newLink);
 
-            var linkHTML = '<li><a class="link" href="' + newLink + '" target="blank" title="Opens in new tab">' + newLink + '</a> <a href="#" class="delete-link">(delete)</a></li>';
+            linkHTML = '<li><a class="link" href="' + newLink + '" target="blank" title="Opens in new tab">' + newLink + '</a> <a href="#" class="delete-link">(delete)</a></li>';
             jQuery("#links").append(linkHTML);
             jQuery("#link").val('');
         }
@@ -234,12 +268,16 @@ var SnippetUI = {
     },
 
     registerFileNameListeners: function () {
+        var filename, fileType, editorNumber;
+
         jQuery(".file-name").each(function () {
             jQuery(this).blur(function () {
-                var filename = jQuery(this).val();
+                
+                filename = jQuery(this).val();
+                
                 if(filename.indexOf(".") != -1){
-                    var fileType = filename.substring(filename.lastIndexOf("."));
-                    var editorNumber = jQuery(this).siblings(".editornumber").val();
+                    fileType = filename.substring(filename.lastIndexOf("."));
+                    editorNumber = jQuery(this).siblings(".editornumber").val();
                     editorHelper.updateSyntaxHighlighting(fileType, editorNumber);
                 }
             });
@@ -249,6 +287,7 @@ var SnippetUI = {
     registerNewLinkListeners: function(){
         jQuery("#add-new-link").click(function(){        
             snippetUI.addLink(jQuery('#link').val().trim());
+            return false;
         });
 
         jQuery('#link').keydown(function (event) {
@@ -262,31 +301,80 @@ var SnippetUI = {
     registerMiscEventListeners: function(){
         jQuery("#add-new-file").click(function () {                    
             editorHelper.addNewFile();
+            return false;
         });
         
 
-        jQuery("#save").click(function(){
-            codeSnippet.saveSnippet();
+        jQuery("#save").click(function(){            
+            snippetUI.initiateSave();
         });
 
         jQuery("#delete").click(function () {
             if(confirm("Sure?")){
                 jQuery("#delete-form").submit();
+            }else{
+                return false;
             }
         });
+    },
+
+    initiateSave: function(){
+        var snippetJSON, 
+            files, 
+            editors, 
+            curEditor, 
+            tmpFileName, 
+            fileContents;      
+
+        //Set the snippet title, description and meta data
+        codeSnippet.setTitle(jQuery("#title").val());
+        codeSnippet.setDescription(jQuery("#description").val());
+        codeSnippet.setViews(jQuery("#views").val());
+        codeSnippet.setDateCreated(jQuery("#dateCreated").val());
+        codeSnippet.setLastModified(jQuery("#lastModified").val());
+
+        //add all the files to the snippet          
+        files = [];
+
+        jQuery(".snippet-file").each(function () {
+            tmpFileName = jQuery(this).children('.file-name').val().trim();                
+            if(tmpFileName !== ""){
+                editors = editorHelper.getEditors();
+                curEditor = editors[parseInt(jQuery(this).children('.editornumber').val())];
+                fileContents = snippetHelper.encodeString(curEditor.getSession().getValue());
+                file = {
+                    filename: tmpFileName,
+                    filecontent: fileContents
+                };
+                files.push(file);
+            }
+        });
+
+        codeSnippet.setFiles(files);
+        
+        snippetJSON = codeSnippet.toJSONString();
+            
+        if(jQuery("#title").val().trim() != ""){            
+            jQuery("#snippet").val(snippetJSON);
+            jQuery("#snippet-form").submit();
+        }else{
+            jQuery("#validation-error").show();
+            return false;
+        }
     }
 }
 
-
 jQuery(document).ready(function () {
-    editorCount = 0;
+    //setup our objects
     snippetUI = SnippetUI.init();
     editorHelper = EditorHelper.init();
     snippetHelper = SnippetHelper.init();
     codeSnippet = CodeSnippet.init();
 
+    //run through and setup all the editors
 	editorHelper.setupEditors();
 
+    //Register all ui event listeners
     snippetUI.registerNewLinkListeners();
     snippetUI.registerDeleteLinkListeners();
     snippetUI.registerFileNameListeners();
