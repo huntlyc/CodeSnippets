@@ -90,52 +90,6 @@ var SnippetHelper = {
     }
 }
 
-var SnippetUI = {
-    init: function(){
-        return this;
-    },
-
-    addLink: function(newLink){
-
-        console.log(newLink);
-        if(newLink != ""){
-            var regex = /https?:\/\//;                            
-            var match = regex.exec(newLink);  
-            if(!match){                        
-                newLink = "http://" + newLink;
-            }
-
-            codeSnippet.addLink(newLink);
-
-            var linkHTML = '<li><a class="link" href="' + newLink + '" target="blank" title="Opens in new tab">' + newLink + '</a> <a href="#" class="delete-link">(delete)</a></li>';
-            jQuery("#links").append(linkHTML);
-            jQuery("#link").val('');
-        }
-
-        this.registerDeleteLinkListeners();
-    },
-    
-    registerDeleteLinkListeners: function () {
-        jQuery("a.delete-link").click(function () {
-            codeSnippet.removeLink(jQuery(this).siblings("a").text());
-            jQuery(this).parents("li").remove();
-            return false;
-        });    
-    },
-
-    registerFileNameListeners: function () {
-        jQuery(".file-name").each(function () {
-            jQuery(this).blur(function () {
-                var filename = jQuery(this).val();
-                if(filename.indexOf(".") != -1){
-                    var fileType = filename.substring(filename.lastIndexOf("."));
-                    var editorNumber = jQuery(this).siblings(".editornumber").val();
-                    editorHelper.updateSyntaxHighlighting(fileType, editorNumber);
-                }
-            });
-        });
-    }
-}
 
 var EditorHelper = {    
 
@@ -144,6 +98,25 @@ var EditorHelper = {
     init: function () {
         this.editors = [];
         return this;
+    },
+
+    addNewFile: function(){
+        var newHTML = '<div class="snippet-file"><input type="hidden" class="editornumber" value="' + editorCount + '"/><input type="text" class="span3 file-name" placeholder="readme.txt"><div class="aceeditor" id="editor' + editorCount + '"></div></div>';
+        jQuery("#snippet-list").append(newHTML);
+
+        var editorID = "editor" + this._editors.length;
+        console.log(editorID);
+        var editor = ace.edit(editorID);
+        editor.setTheme("ace/theme/solarized_dark");
+
+        var TextMode = require("ace/mode/text").Mode;
+        editor.getSession().setMode(new TextMode());  
+        var editors = editorHelper.getEditors();
+        editors.push(editor);
+        editorHelper.updateEditorList(editors);
+        snippetUI.registerFileNameListeners();
+        editorCount++;
+        return false; 
     },
 
     getEditors: function () {
@@ -226,6 +199,85 @@ var EditorHelper = {
     }
 };
 
+
+var SnippetUI = {
+    init: function(){
+        return this;
+    },
+
+    addLink: function(newLink){
+
+        console.log(newLink);
+        if(newLink != ""){
+            var regex = /https?:\/\//;                            
+            var match = regex.exec(newLink);  
+            if(!match){                        
+                newLink = "http://" + newLink;
+            }
+
+            codeSnippet.addLink(newLink);
+
+            var linkHTML = '<li><a class="link" href="' + newLink + '" target="blank" title="Opens in new tab">' + newLink + '</a> <a href="#" class="delete-link">(delete)</a></li>';
+            jQuery("#links").append(linkHTML);
+            jQuery("#link").val('');
+        }
+
+        this.registerDeleteLinkListeners();
+    },
+    
+    registerDeleteLinkListeners: function () {
+        jQuery("a.delete-link").click(function () {
+            codeSnippet.removeLink(jQuery(this).siblings("a").text());
+            jQuery(this).parents("li").remove();
+            return false;
+        });    
+    },
+
+    registerFileNameListeners: function () {
+        jQuery(".file-name").each(function () {
+            jQuery(this).blur(function () {
+                var filename = jQuery(this).val();
+                if(filename.indexOf(".") != -1){
+                    var fileType = filename.substring(filename.lastIndexOf("."));
+                    var editorNumber = jQuery(this).siblings(".editornumber").val();
+                    editorHelper.updateSyntaxHighlighting(fileType, editorNumber);
+                }
+            });
+        });
+    },
+
+    registerNewLinkListeners: function(){
+        jQuery("#add-new-link").click(function(){        
+            snippetUI.addLink(jQuery('#link').val().trim());
+        });
+
+        jQuery('#link').keydown(function (event) {
+            if (event.which === 13) {
+                event.preventDefault();            
+                snippetUI.addLink(jQuery(this).val().trim());
+            }       
+        });
+    },
+
+    registerMiscEventListeners: function(){
+        jQuery("#add-new-file").click(function () {                    
+            editorHelper.addNewFile();
+        });
+        
+
+        jQuery("#save").click(function(){
+            codeSnippet.saveSnippet();
+        });
+
+        jQuery("#delete").click(function () {
+            if(confirm("Sure?")){
+                jQuery("#delete-form").submit();
+            }
+        });
+    }
+}
+
+
 jQuery(document).ready(function () {
     editorCount = 0;
     snippetUI = SnippetUI.init();
@@ -235,47 +287,9 @@ jQuery(document).ready(function () {
 
 	editorHelper.setupEditors();
 
-    jQuery("#add-new-file").click(function () {                    
-        var newHTML = '<div class="snippet-file"><input type="hidden" class="editornumber" value="' + editorCount + '"/><input type="text" class="span3 file-name" placeholder="readme.txt"><div class="aceeditor" id="editor' + editorCount + '"></div></div>';
-        jQuery("#snippet-list").append(newHTML);
-
-        var editorID = "editor" + editorCount;
-        console.log(editorID);
-        var editor = ace.edit(editorID);
-        editor.setTheme("ace/theme/solarized_dark");
-
-        var TextMode = require("ace/mode/text").Mode;
-        editor.getSession().setMode(new TextMode());  
-        var editors = editorHelper.getEditors();
-        editors.push(editor);
-        editorHelper.updateEditorList(editors);
-        snippetUI.registerFileNameListeners();
-        editorCount++;
-        return false; 
-    });
-
-    jQuery("#add-new-link").click(function(){        
-        snippetUI.addLink(jQuery('#link').val().trim());
-    });
-
-    jQuery('#link').keydown(function (event) {
-        if (event.which === 13) {
-            event.preventDefault();            
-            snippetUI.addLink(jQuery(this).val().trim());
-        }       
-    });
-
-    jQuery("#save").click(function(){
-        codeSnippet.saveSnippet();
-    });
-
-    jQuery("#delete").click(function () {
-        if(confirm("Sure?")){
-            jQuery("#delete-form").submit();
-        }
-    });
-
+    snippetUI.registerNewLinkListeners();
     snippetUI.registerDeleteLinkListeners();
     snippetUI.registerFileNameListeners();
+    snippetUI.registerMiscEventListeners();
 
 });
