@@ -197,21 +197,12 @@
         <?php endif; ?>
         <script src="js/jquery.js"></script>        
         <script src="js/bootstrap.min.js"></script>
-        <script src="js/ace.js" type="text/javascript" charset="utf-8"></script>        
-        <script src="js/mode-c_cpp.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/mode-coffee.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/mode-csharp.js" type="text/javascript" charset="utf-8"></script>
+        <script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
         <script src="js/mode-css.js" type="text/javascript" charset="utf-8"></script>
         <script src="js/mode-html.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/mode-java.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/mode-json.js" type="text/javascript" charset="utf-8"></script>                
-        <script src="js/mode-less.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/mode-perl.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/mode-php.js" type="text/javascript" charset="utf-8"></script>        
-        <script src="js/mode-python.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/mode-ruby.js" type="text/javascript" charset="utf-8"></script>
-        <script src="js/mode-scss.js" type="text/javascript" charset="utf-8"></script>
+        <script src="js/mode-javascript.js" type="text/javascript" charset="utf-8"></script>        
+        <script src="js/mode-json.js" type="text/javascript" charset="utf-8"></script>
+        <script src="js/mode-php.js" type="text/javascript" charset="utf-8"></script>
         <script src="js/mode-sh.js" type="text/javascript" charset="utf-8"></script>
         <script src="js/mode-sql.js" type="text/javascript" charset="utf-8"></script>
         <script src="js/mode-text.js" type="text/javascript" charset="utf-8"></script>
