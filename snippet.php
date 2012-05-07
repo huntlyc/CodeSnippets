@@ -92,6 +92,9 @@
                             <li<?php if(!isset($mID)){ echo ' class="active"'; }?>><a href="snippet.php">Add New</a></li>              
                         </ul>
                     </div><!--/.nav-collapse -->
+                    <form class="navbar-search pull-left" action="search.php" method="get">
+                        <input type="text" name="query" class="search-query" placeholder="Search">
+                    </form>
                 </div>
             </div>
         </div>

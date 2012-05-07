@@ -5,6 +5,7 @@ var editorHelper,
 
 var CodeSnippet = {
     _title: "",
+    _keywords: [],
     _description: "",
     _links: [],
     _files: [],
@@ -18,6 +19,21 @@ var CodeSnippet = {
 
     setTitle: function(title){
         this._title = snippetHelper.encodeString(title);
+    },
+
+    updateKeywords: function(newKeywordList){
+        var tmpList,
+            regxPatt;
+        
+        regxPatt = /[^\w]/g;
+        
+        tmpList = newKeywordList;
+
+        for (var i = 0; i < tmpList.length; i++) {
+            tmpList[i] = tmpList[i].replace(regxPatt, "").toLowerCase();
+        };
+
+        this._keywords = tmpList;
     },
 
     setDescription: function(description){
@@ -59,12 +75,25 @@ var CodeSnippet = {
     
     toJSONString: function () {        
         var snippet, 
+            curKeyword,
             curFile, 
             curLink;
 
         //set title and metadata
         snippet = "{";
         snippet += '"title": "' + this._title + '", ';
+        
+        //Build Keywords
+        snippet += '"keywords": [';        
+        if(this._keywords.length > 0){
+            for (var i = 0; i < this._keywords.length; i++) {;
+                curKeyword = this._keywords[i];
+                snippet += '"' + curKeyword + '", ';
+            };
+            snippet = snippet.substring(0, snippet.length -2);
+        }
+        snippet += '], ';
+
         snippet += '"description": "' + this._description + '", ';
         snippet += '"date_created": "' + this._dateCreated + '", ';
         snippet += '"last_modified": "' + this._lastModified + '", ';
@@ -328,6 +357,7 @@ var SnippetUI = {
 
         //Set the snippet title, description and meta data
         codeSnippet.setTitle(jQuery("#title").val());
+        codeSnippet.updateKeywords(jQuery("#title").val().split(" "));
         codeSnippet.setDescription(jQuery("#description").val());
         codeSnippet.setViews(jQuery("#views").val());
         codeSnippet.setDateCreated(jQuery("#dateCreated").val());

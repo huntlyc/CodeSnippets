@@ -67,3 +67,13 @@ div.container{
 .hidden{
     display: none;
 }
+
+div.highlighted{
+    background-color: #eee;
+    padding: 8px;
+    margin-bottom: 10px;
+    float: right;
+    width: 200px;
+}
+
+.clear{clear: both;}
