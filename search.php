@@ -9,7 +9,6 @@
       $keywords[$i] = urlencode(strtolower($keywords[$i]));
     }
     
-
     $matchingSnippets = $collection->find( array("keywords" => array('$in' => $keywords) ));
     $matchingSnippets->sort(array("last_modified" => -1, "title" => 1));
   }
@@ -68,16 +67,13 @@
                 </ul>
               </div>
             <?php endif; ?>
-
             <h3>
               <a title="<?php echo htmlentities(urldecode($snippet["title"])); ?>" href="snippet.php?id=<?php echo $sID; ?>">
                 <?php echo htmlentities(urldecode($snippet["title"])); ?>
               </a>
             </h3>
-            <p><?php echo htmlentities(urldecode($snippet['description'])); ?></p>
-            
+            <p><?php echo htmlentities(urldecode($snippet['description'])); ?></p>            
           </div>
-
           <hr class="clear" />
         <?php endforeach; ?>
       <?php else: ?>
