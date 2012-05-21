@@ -185,16 +185,16 @@
             </div>    			
 		</div> <!-- /container -->
         <?php if(isset($mID)): ?>
-    		<form action="snippet.php" method="post" id="snippet-form">
-                <input type="hidden" id="id" name="id" value="<?php echo $mID->{'$id'}; ?>"/>
+    		<form action="api/snippets" method="put" id="snippet-form">
+                <input type="hidden" id="update-id" name="id" value="<?php echo $mID->{'$id'}; ?>"/>
                 <input type="hidden" id="snippet" name="update-snippet"/>
             </form>
-            <form action="snippet.php" method="post" id="delete-form">
-                <input type="hidden" id="id" name="id" value="<?php echo $mID->{'$id'}; ?>"/>
+            <form action="api/snippets" method="delete" id="delete-form">
+                <input type="hidden" id="delete-id" name="id" value="<?php echo $mID->{'$id'}; ?>"/>
                 <input type="hidden" id="snippet" name="delete-snippet"/>
             </form>
         <?php else: ?>
-            <form action="snippet.php" method="post" id="snippet-form">
+            <form action="api/snippets" method="post" id="snippet-form">
                 <input type="hidden" id="snippet" name="new-snippet"/>
             </form>
         <?php endif; ?>

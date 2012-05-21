@@ -340,7 +340,14 @@ var SnippetUI = {
 
         jQuery("#delete").click(function () {
             if(confirm("Sure?")){
-                jQuery("#delete-form").submit();
+                //jQuery("#delete-form").submit();
+
+                jQuery.ajax({
+                    url: "api/snippets",
+                    type: "DELETE",
+                    data: {"id" : jQuery("#delete-id").val()}
+                });
+            
             }else{
                 return false;
             }
@@ -386,7 +393,15 @@ var SnippetUI = {
             
         if(jQuery("#title").val().trim() != ""){            
             jQuery("#snippet").val(snippetJSON);
-            jQuery("#snippet-form").submit();
+
+            if(jQuery("#snippet").attr("name") == "update-snippet"){
+                jQuery.ajax({
+                    url: "api/snippets",
+                    type: "PUT",
+                    data: {"id" : jQuery("#update-id").val(), "data" : jQuery("#snippet").val()}
+                });
+            }
+            //jQuery("#snippet-form").submit();
         }else{
             jQuery("#validation-error").show();
             return false;
