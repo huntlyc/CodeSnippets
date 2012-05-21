@@ -1,25 +1,15 @@
 <?php
-
-// load Tonic library
+// load Tonic library and our snippet resource
 require_once 'lib/tonic.php';
-// load our snippet request
 require_once 'api/SnippetResource.php';
 
-// handle request
 $request = new Request();
 try {
     $resource = $request->loadResource();
     $response = $resource->exec($request);
 
 } catch (ResponseException $e) {
-    switch ($e->getCode()) {
-    case Response::UNAUTHORIZED:
-        $response = $e->response($request);
-        $response->addHeader('WWW-Authenticate', 'Basic realm="Tonic"');
-        break;
-    default:
-        $response = $e->response($request);
-    }
+    //If we've caught an exception, then eleviate stress by playing pacman.
+    header("Location: /error.php"); die();
 }
 $response->output();
- 

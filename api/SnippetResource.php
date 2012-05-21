@@ -2,7 +2,7 @@
  
 /**
  * An example resource
- * @uri /snippets
+ * @uri /api/snippets
  */
 class SnippetResource extends Resource {
     
@@ -42,6 +42,7 @@ class SnippetResource extends Resource {
 		//Set the response body to be our encoded array.
 		$response->body = json_encode($snippetsList);		  
         return $response;        
-    }    
+    }
+
 }
 ?>
