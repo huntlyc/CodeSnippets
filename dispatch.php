@@ -3,7 +3,7 @@
 require_once 'lib/tonic.php';
 require_once 'api/SnippetResource.php';
 
-$request = new Request();
+$request = new Request(array('baseUri' => '/api'));
 try {
     $resource = $request->loadResource();
     $response = $resource->exec($request);

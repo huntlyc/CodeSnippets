@@ -328,24 +328,27 @@ var SnippetUI = {
     },
 
     registerMiscEventListeners: function(){
-        jQuery("#add-new-file").click(function () {                    
+        jQuery("#add-new-file").click(function (e){
+            e.preventDefault();
             editorHelper.addNewFile();
             return false;
         });
         
 
-        jQuery("#save").click(function(){            
+        jQuery("#save").click(function(e){
+            e.preventDefault();        
             snippetUI.initiateSave();
+            return false;
         });
 
-        jQuery("#delete").click(function () {
+        jQuery("#delete").click(function (e) {
+            e.preventDefault();
             if(confirm("Sure?")){
                 //jQuery("#delete-form").submit();
 
                 jQuery.ajax({
-                    url: "api/snippets",
-                    type: "DELETE",
-                    data: {"id" : jQuery("#delete-id").val()}
+                    url: "api/snippet/" + jQuery("#delete-id").val(),
+                    type: "DELETE"                    
                 });
             
             }else{
@@ -396,12 +399,17 @@ var SnippetUI = {
 
             if(jQuery("#snippet").attr("name") == "update-snippet"){
                 jQuery.ajax({
-                    url: "api/snippets",
+                    url: "api/snippet/" + jQuery("#update-id").val(),
                     type: "PUT",
-                    data: {"id" : jQuery("#update-id").val(), "data" : jQuery("#snippet").val()}
+                    data: jQuery("#snippet").val()
                 });
-            }
-            //jQuery("#snippet-form").submit();
+            }else if(jQuery("#snippet").attr("name") == "new-snippet"){
+                jQuery.ajax({
+                    url: "api/snippet/1",
+                    type: "POST",
+                    data: {"new-snippet": jQuery("#snippet").val()}
+                });
+            }           
         }else{
             jQuery("#validation-error").show();
             return false;
