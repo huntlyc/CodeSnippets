@@ -47,13 +47,12 @@ class SnippetResource extends Resource {
         //Open up a connection to our snippet store
         $con = new Mongo();
         $db = $con->codesnippets;
-        $collection = $db->snippets;
-        $snippetArray = array("snr" => $_POST['new-snippet']);
+        $collection = $db->snippets;        
         
-        if($_POST['new-snippet'] != ""){  
-            $snippet = json_decode($_POST['new-snippet']);
-            $collection->insert($snippet);
-            $snippet = $collection->findOne($snippet);
+        if(isset($request->data)  && $request->data != ""){
+            $newSnippet = json_decode($request->data);
+            $collection->insert($newSnippet);
+            $snippet = $collection->findOne($newSnippet);
             $mID = new MongoId($snippet["_id"]);     
             $sID = $mID->{'$id'};
             $snippetArray = array('id' => $sID, 
@@ -81,7 +80,7 @@ class SnippetResource extends Resource {
         $collection = $db->snippets;        
         $snippetArray = array();
 
-        if(isset($request->data)  && $request->data != ""){            
+        if(isset($request->data)  && $request->data != ""){
             $updatedSnippet = json_decode($request->data);
             $mID = new MongoId($idhash);
 

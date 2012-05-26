@@ -193,6 +193,7 @@ var EditorHelper = {
             filename, 
             filetype, 
             editorNumber; 
+            
         jQuery(".aceeditor").each(function () {
             editorID = jQuery(this).attr("id");            
             editor = ace.edit(editorID);
@@ -287,12 +288,19 @@ var SnippetUI = {
 
         this.registerDeleteLinkListeners();
     },
+
+    registerAllListeners: function(){
+        this.registerDeleteLinkListeners();
+        this.registerFileNameListeners();
+        this.registerNewLinkListeners();
+        this.registerMiscEventListeners();
+    },
     
     registerDeleteLinkListeners: function () {
-        jQuery("a.delete-link").click(function () {
+        jQuery("a.delete-link").click(function(event) {
+            event.preventDefault();
             codeSnippet.removeLink(jQuery(this).siblings("a").text());
             jQuery(this).parents("li").remove();
-            return false;
         });    
     },
 
@@ -314,12 +322,12 @@ var SnippetUI = {
     },
 
     registerNewLinkListeners: function(){
-        jQuery("#add-new-link").click(function(){        
+        jQuery("#add-new-link").click(function(event){
+            event.preventDefault();
             snippetUI.addLink(jQuery('#link').val().trim());
-            return false;
         });
 
-        jQuery('#link').keydown(function (event) {
+        jQuery('#link').keydown(function(event) {
             if (event.which === 13) {
                 event.preventDefault();            
                 snippetUI.addLink(jQuery(this).val().trim());
@@ -328,31 +336,33 @@ var SnippetUI = {
     },
 
     registerMiscEventListeners: function(){
-        jQuery("#add-new-file").click(function (e){
-            e.preventDefault();
+        jQuery("#add-new-file").click(function(event){
+            event.preventDefault();
             editorHelper.addNewFile();
-            return false;
         });
         
-
-        jQuery("#save").click(function(e){
-            e.preventDefault();        
+        jQuery("#save").click(function(event){
+            event.preventDefault();        
             snippetUI.initiateSave();
-            return false;
         });
 
-        jQuery("#delete").click(function (e) {
-            e.preventDefault();
+        jQuery("#delete").click(function(event) {
+            event.preventDefault();
             if(confirm("Sure?")){
-                //jQuery("#delete-form").submit();
-
                 jQuery.ajax({
                     url: "api/snippet/" + jQuery("#delete-id").val(),
-                    type: "DELETE"                    
+                    type: "DELETE",
+                    success: function(){
+                        jQuery("#success p").text("Snippet deleted"); 
+                        jQuery("#success").show();
+                        jQuery("#main-container").fadeOut('fast').remove();
+
+                    },
+                    error: function(){
+                        jQuery("#error p").text("Sorry, could not delete the snippet.");
+                        jQuery("#error").fadeIn('fast');
+                    }
                 });
-            
-            }else{
-                return false;
             }
         });
     },
@@ -363,7 +373,8 @@ var SnippetUI = {
             editors, 
             curEditor, 
             tmpFileName, 
-            fileContents;      
+            fileContents,
+            formHTML;
 
         //Set the snippet title, description and meta data
         codeSnippet.setTitle(jQuery("#title").val());
@@ -401,19 +412,59 @@ var SnippetUI = {
                 jQuery.ajax({
                     url: "api/snippet/" + jQuery("#update-id").val(),
                     type: "PUT",
-                    data: jQuery("#snippet").val()
+                    data: jQuery("#snippet").val(),
+                    success: function(data){
+                        jQuery("#success p").text("Snippet updated");
+                        jQuery("#success").fadeIn('fast');
+                    },
+                    error: function(data){
+                        jQuery("#error p").text("Sorry, could not update the snippet.");
+                        jQuery("#error").fadeIn('fast');
+                    }
                 });
             }else if(jQuery("#snippet").attr("name") == "new-snippet"){
                 jQuery.ajax({
                     url: "api/snippet/1",
                     type: "POST",
-                    data: {"new-snippet": jQuery("#snippet").val()}
+                    data: {"new-snippet": jQuery("#snippet").val()},
+                    success: function(data){
+                        var snippet = JSON.parse(data);                        
+                        jQuery("#success p").text("Snippet added!");
+                        jQuery("#success").fadeIn('fast');
+                        
+                        //update the new button to read "update"
+                        jQuery("#update-buttons a:first").html('<i class="icon-refresh icon-white"></i>&nbsp;Update');
+
+                        //Add in the delete button
+                        jQuery("#update-buttons").append('<a href="#" id="delete" class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;Delete</a>');
+
+                        //add h0idden forms
+                        snippetUI.setupHiddenForms(snippet.id);
+                    },
+                    error: function(data){
+                        jQuery("#error p").text("Sorry, could not add the snippet.");
+                        jQuery("#error").fadeIn('fast');
+                    }
                 });
             }           
         }else{
             jQuery("#validation-error").show();
             return false;
         }
+    },
+
+    setupHiddenForms: function(id){
+        //add extra field to hidden form 
+        formHTML =  '<form action="api/snippets" method="put" id="snippet-form">';
+        formHTML +=     '<input type="hidden" id="update-id" name="id" value="' + id + '"/>';
+        formHTML +=     '<input type="hidden" id="snippet" name="update-snippet"/>';
+        formHTML += '</form>';
+        formHTML += '<form action="api/snippets" method="delete" id="delete-form">';
+        formHTML +=     '<input type="hidden" id="delete-id" name="id" value="' + id + '"/>';
+        formHTML +=     '<input type="hidden" id="snippet" name="delete-snippet"/>';
+        formHTML += '</form>';
+        jQuery("#hidden-forms").html(formHTML);
+        registerAllListeners();
     }
 }
 
@@ -428,9 +479,5 @@ jQuery(document).ready(function () {
 	editorHelper.setupEditors();
 
     //Register all ui event listeners
-    snippetUI.registerNewLinkListeners();
-    snippetUI.registerDeleteLinkListeners();
-    snippetUI.registerFileNameListeners();
-    snippetUI.registerMiscEventListeners();
-
+    snippetUI.registerAllListeners();
 });

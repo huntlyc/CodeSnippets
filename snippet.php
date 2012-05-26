@@ -13,33 +13,6 @@
     	    
     	}
 
-        //If we get a post we're modifying the snippet somehow
-        if(isset($_POST['id']) && $_POST['id'] != ""){
-            $mID = new MongoId($_POST['id']);   
-            if(isset($_POST['update-snippet'])){ //Update Snippet
-                $msg = "Cound not save...";
-                if($_POST['update-snippet'] != ""){
-                    $updatedSnippet = json_decode($_POST['update-snippet']);
-                    $collection->update(array("_id" => $mID), $updatedSnippet);
-                    $snippet = $collection->findOne($updatedSnippet);
-                    $msg = "Updated the snippet";               
-                }
-            }elseif(isset($_POST['delete-snippet'])){ //Remove snippet                         
-                $collection->remove(array("_id" => $mID));
-                header("Location: index.php");
-                exit();
-            }
-        }elseif(isset($_POST['new-snippet'])){        
-            $msg = "Cound not save...";
-            if($_POST['new-snippet'] != ""){  
-                $snippet = json_decode($_POST['new-snippet']);
-                $collection->insert($snippet);
-                $snippet = $collection->findOne($snippet);
-                $mID = new MongoId($snippet["_id"]);      
-                $msg = "Added a new snippet to the collection!";                  
-            }        
-    	}
-
         if(isset($snippet)){ //pull out all our info...
             $title = htmlentities(urldecode($snippet["title"]));
             $description = htmlentities(urldecode($snippet["description"]));
@@ -99,21 +72,24 @@
             </div>
         </div>
         <div class="container">
-        	<?php if(isset($msg) && $msg != ""): ?>
-                <?php if($isError):?>
-                    <div class="alert alert-error fade in">
-                <?php else:?>
-                    <div class="alert alert-success fade in">
-                <?php endif;?>
+        	
+            <div id="error" class="hidden alert alert-error">
                 <a class="close" data-dismiss="alert" href="#">&times;</a>
-                <h2 class="alert-heading"><?php echo ($isError) ? "Error!" : "Success!";?></h2>
-                <strong><?php echo ($isError) ? "Error: " : "";?></strong>&nbsp;<?php echo $msg; ?>     
+                <h2 class="alert-heading">Error!</h2>
+                <p><strong>Error:</strong>&nbsp;Sorry, there has been an error serving your request</p>
             </div>
-            <?php endif; ?> 
+                
+            <div id="success" class="hidden alert alert-success">                
+                <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <h2 class="alert-heading">Success!</h2>
+                <p>Snippet added</p>                
+            </div>
+            
             <div class="alert alert-error fade in" id="validation-error">                
                 <a class="close" data-dismiss="alert" href="#">&times;</a>
                 <h2 class="alert-heading">Woah there! <small>We'll be needing a title for this snippet</small></h2>
             </div>
+
     		<div id="main-container" >                
                 <div class="row">
                     <div class="span8">                                                                     
@@ -184,20 +160,22 @@
                 </div>
             </div>    			
 		</div> <!-- /container -->
-        <?php if(isset($mID)): ?>
-    		<form action="api/snippets" method="put" id="snippet-form">
-                <input type="hidden" id="update-id" name="id" value="<?php echo $mID->{'$id'}; ?>"/>
-                <input type="hidden" id="snippet" name="update-snippet"/>
-            </form>
-            <form action="api/snippets" method="delete" id="delete-form">
-                <input type="hidden" id="delete-id" name="id" value="<?php echo $mID->{'$id'}; ?>"/>
-                <input type="hidden" id="snippet" name="delete-snippet"/>
-            </form>
-        <?php else: ?>
-            <form action="api/snippets" method="post" id="snippet-form">
-                <input type="hidden" id="snippet" name="new-snippet"/>
-            </form>
-        <?php endif; ?>
+        <div id="hidden-forms">
+            <?php if(isset($mID)): ?>
+        		<form action="api/snippets" method="put" id="snippet-form">
+                    <input type="hidden" id="update-id" name="id" value="<?php echo $mID->{'$id'}; ?>"/>
+                    <input type="hidden" id="snippet" name="update-snippet"/>
+                </form>
+                <form action="api/snippets" method="delete" id="delete-form">
+                    <input type="hidden" id="delete-id" name="id" value="<?php echo $mID->{'$id'}; ?>"/>
+                    <input type="hidden" id="snippet" name="delete-snippet"/>
+                </form>
+            <?php else: ?>
+                <form action="api/snippets" method="post" id="snippet-form">
+                    <input type="hidden" id="snippet" name="new-snippet"/>
+                </form>
+            <?php endif; ?>
+        </div>
         <script src="js/jquery.js"></script>        
         <script src="js/bootstrap.min.js"></script>
         <script src="js/ace.js" type="text/javascript" charset="utf-8"></script>
