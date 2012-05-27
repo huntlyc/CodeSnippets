@@ -426,7 +426,7 @@ var SnippetUI = {
                 jQuery.ajax({
                     url: "api/snippet/1",
                     type: "POST",
-                    data: {"new-snippet": jQuery("#snippet").val()},
+                    data: jQuery("#snippet").val(),
                     success: function(data){
                         var snippet = JSON.parse(data);                        
                         jQuery("#success p").text("Snippet added!");

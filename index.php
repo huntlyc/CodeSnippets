@@ -65,7 +65,7 @@
                   ?>
                   <tr>
                     <td><a title="<?php echo htmlentities(urldecode($snippet["title"])); ?>" href="snippet.php?id=<?php echo $sID; ?>"><?php echo htmlentities(urldecode($snippet["title"])); ?></a></td>
-                    <td><?php echo date("d/m/Y h:i:s", strtotime($snippet["last_modified"])); ?></td>                
+                    <td><?php echo date("d/m/Y H:i:s", strtotime($snippet["last_modified"])); ?></td>                
                   </tr>
                 <?php endforeach; ?>
                 </tbody>

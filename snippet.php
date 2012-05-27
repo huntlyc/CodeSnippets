@@ -145,8 +145,8 @@
                                 <a href="#" id="add-new-link" class="btn btn-success"><i class="icon-plus icon-white"></i>Add Link</a>     
 
                                 <input type="hidden" name="views" id="views" value="<?php echo (isset($views) && is_numeric($views)) ? $views : 1 ; ?>"/>
-                                <input type="hidden" name="dateCreated" id="dateCreated" value="<?php echo (isset($dateCreated)) ? $dateCreated : date("Y-m-d h:i:s") ; ?>"/>
-                                <input type="hidden" name="lastModified" id="lastModified" value="<?php echo date("Y-m-d h:i:s"); ?>"/>
+                                <input type="hidden" name="dateCreated" id="dateCreated" value="<?php echo (isset($dateCreated)) ? $dateCreated : date("Y-m-d H:i:s") ; ?>"/>
+                                <input type="hidden" name="lastModified" id="lastModified" value="<?php echo date("Y-m-d H:i:s"); ?>"/>
                                 
                             </div>
                             <div id="update-buttons">
