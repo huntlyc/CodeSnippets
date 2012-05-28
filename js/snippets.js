@@ -351,6 +351,7 @@ var SnippetUI = {
             if(confirm("Sure?")){
                 jQuery.ajax({
                     url: "api/snippet/" + jQuery("#delete-id").val(),
+                    cache: false,
                     type: "DELETE",
                     success: function(){
                         jQuery("#success p").text("Snippet deleted"); 
@@ -411,6 +412,7 @@ var SnippetUI = {
             if(jQuery("#snippet").attr("name") == "update-snippet"){
                 jQuery.ajax({
                     url: "api/snippet/" + jQuery("#update-id").val(),
+                    cache: false,
                     type: "PUT",
                     data: jQuery("#snippet").val(),
                     success: function(data){
@@ -425,6 +427,7 @@ var SnippetUI = {
             }else if(jQuery("#snippet").attr("name") == "new-snippet"){
                 jQuery.ajax({
                     url: "api/snippet/1",
+                    cache: false,
                     type: "POST",
                     data: jQuery("#snippet").val(),
                     success: function(data){
