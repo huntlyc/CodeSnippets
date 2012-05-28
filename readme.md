@@ -2,7 +2,7 @@ Code Snippets
 =============
 
 Simple code snippet app thrown together on a lazy Sunday evening.
-Runs on top of MongoDB because I felt like trying something new.  Also, is some what (feebly) JS driven - trying to expand my knowledge a bit.
+Runs on top of MongoDB because I felt like trying something new.  Also, heavily driven via Javascript as I'm trying to expand my knowledge a bit.
 
 Has a small REST API for interacting with the snippets.
 
