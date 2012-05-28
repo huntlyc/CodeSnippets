@@ -176,6 +176,18 @@
                 </form>
             <?php endif; ?>
         </div>
+        <div class="modal fade" id="loading">
+          <div class="modal-header">            
+            <h3>Working...</h3>
+          </div>
+          <div class="modal-body">
+            <p>Please wait...</p>
+            <img src="img/load.gif" alt="loading - please wait..."/>
+          </div>
+          <div class="modal-footer">
+            <p>Shouldn't take a second</p>
+          </div>
+        </div>
         <script src="js/jquery.js"></script>        
         <script src="js/bootstrap.min.js"></script>
         <script src="js/ace.js" type="text/javascript" charset="utf-8"></script>

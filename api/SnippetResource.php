@@ -39,6 +39,7 @@ class SnippetResource extends Resource {
         return $response;
     }
 
+    //POST -> New Snippet
     function post($request, $idhash){
         $response = new Response($request);
         $response->code = Response::OK;
@@ -71,6 +72,7 @@ class SnippetResource extends Resource {
         return $response;
     }
  
+    //PUT -> Update
     function put($request, $idhash){
         $response = new Response($request);
         $response->code = Response::OK;

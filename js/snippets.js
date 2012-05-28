@@ -1,7 +1,8 @@
 //Some Globals, cause we all love 'em so much
 var editorHelper, 
     codeSnippet, 
-    snippetUI;
+    snippetUI,
+    loadingModal;
 
 var CodeSnippet = {
     _title: "",
@@ -353,6 +354,12 @@ var SnippetUI = {
                     url: "api/snippet/" + jQuery("#delete-id").val(),
                     cache: false,
                     type: "DELETE",
+                    beforeSend: function(){
+                        jQuery('#loading').modal({keyboard: false, backdrop: "static"});
+                    },
+                    complete: function(){
+                      jQuery('#loading').modal('hide');
+                    },
                     success: function(){
                         jQuery("#success p").text("Snippet deleted"); 
                         jQuery("#success").show();
@@ -415,6 +422,12 @@ var SnippetUI = {
                     cache: false,
                     type: "PUT",
                     data: jQuery("#snippet").val(),
+                    beforeSend: function(){
+                        jQuery('#loading').modal({keyboard: false, backdrop: "static"});
+                    },
+                    complete: function(){
+                      jQuery('#loading').modal('hide');
+                    },
                     success: function(data){
                         jQuery("#success p").text("Snippet updated");
                         jQuery("#success").fadeIn('fast');
@@ -430,6 +443,12 @@ var SnippetUI = {
                     cache: false,
                     type: "POST",
                     data: jQuery("#snippet").val(),
+                    beforeSend: function(){
+                        jQuery('#loading').modal({keyboard: false, backdrop: "static"});
+                    },
+                    complete: function(){
+                        jQuery('#loading').modal('hide');
+                    },
                     success: function(data){
                         var snippet = JSON.parse(data);                        
                         jQuery("#success p").text("Snippet added!");
@@ -483,4 +502,6 @@ jQuery(document).ready(function () {
 
     //Register all ui event listeners
     snippetUI.registerAllListeners();
+
+    
 });
